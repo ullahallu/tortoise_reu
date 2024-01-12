@@ -1,0 +1,355 @@
+September 22, 2023 : 
+    1. Literature Review
+    2. Clinical Review 
+
+09 / 20 / 2023 : 
+
+    Literature Review : 
+    
+        An Assistive Device for Alzhimer's Patients, Pubali Roy et al.  :
+        Innovative Assistive System for Monitoring People with Alzhimer, Catalina Luca et al. : 
+        An Intelligent Assistive Tool for Alzhimer's Patient, Kazi Omar et al. :
+        TagAlong: An Assistive Device for Alzhimer Patients, Merlin Lobo et al. : 
+        Mehmans: An Assistive Device for Dementia Patients, Unais Sait et al. : 
+    
+10 / 01 / 2023 : 
+
+    TORTOISE SYSTEM  : 
+        1. Smart Glasses components : 
+            - Hardware Model : 
+                1. Alpha System : 
+                    Raspberry Pi Zero 2W as the microprocessor, integrating a RPi Camera Module v2 for image feed, powered by battery source 
+                    Transfer-Learning and Optimizing Image Classification Architectures, implementation into overall system functionality 
+                    Bluetooth socket connection implementation, testing with sample output classifications to build socked server-client connection with watch 
+                2. Beta System :
+                    3D printed glasses shell, holding the RPiZero2W with more compact camera (Arducam Mini) for image feed, powered by compact battery source 
+                    Finalize the optimization and integration of Image Classification Architectures into system functionality 
+
+                
+        2. WatchApp : 
+            - Facial Recognition Alerting : 
+                Allow users to add faces 
+            - Object Detection + Location History :
+            - GeoFencing : 
+
+
+
+    ALPHA PHASE     : (10/02/2023 - 12/29/2023) 
+    BETA PHASE      : (01/01/2024 - 03/29/2024)
+    FINAL PHASE     : (04/01/2023 - 05/05/2024)
+        
+10 / 04 / 2023 : 
+    Facial Recognition CNN Architectures : 
+        - FaceNet 
+        - AlexNet
+        - GoogLeNet
+
+    Object Recognition CNN Architectures : 
+        - 
+
+10 / 19 / 2023  : 
+    REU Team Meeting : 
+
+        1. Parts Ordering Logistics : 
+            - send email whenever we need to order 
+    
+        2. Project Development Timeline : 
+            1) Alpha Phase : 10/02/2023 - 12/29/2023 
+                - Getting Alpha prototype done (implementing core functionality, barebones design)
+            2) Beta Phase : 01/01/2024 - 04/16/2024
+                - getting Beta prototype done (enhancing/optimizing prototype, 3D printed design)
+        3. Current Project Backlog :
+            1) Facial Recognition System dev : 
+                - Pull pretrained VGGFace model from repos or somewhere else online
+                - Get architecture to recognize a face, test, assess for further training 
+            2) Object Recognition System dev :
+                - Pull pretrained EfficientNet model (B0 and B7) from repos of somewhere online 
+                - Test, assess for further training 
+            3) Raspberry Pi Stuff :   
+                - RPiZero2W is heating up easily 
+                - consider more powerful, RPi5 ??
+                - Jetson 
+                - Cloud (WiFi Data conn.)
+        
+        4. Notes 
+            - Offload computation from glasses (hold computation on seperate host )
+
+10 / 20 / 2023 : 
+        Data Scientist Skills : 
+        - Programming : 
+            - Python (Pandas, NumPy, SciPy)
+            - R 
+        - Statistical Analysis : 
+            - DescriptiveDescriptive statistics
+            - Inferential statistics
+            - Hypothesis testing
+            - Probability distributions
+        - Machine Learning:
+            - Supervised learning algorithms (e.g., linear regression, SVM, decision trees)
+            - Unsupervised learning algorithms (e.g., clustering, PCA)
+            - Ensemble methods (e.g., random forests, gradient boosting)
+            - Model evaluation metrics
+        - Deep Learning:
+            - Neural networks
+            - CNNs (for image data)
+            - RNNs (for sequence data)
+            - Transformers (for NLP tasks)
+        - Data Wrangling:
+            - Data cleaning
+            - Data preprocessing
+            - Feature engineering
+        - Data Visualization:
+            - Libraries like Matplotlib, Seaborn (Python), and ggplot2 (R)
+        - Databases:
+            - SQL (MySQL, PostgreSQL, MS SQL, etc.)
+            - NoSQL (MongoDB, Cassandra, etc.)
+        - Big Data Tools (if relevant):
+            - Hadoop
+            - Spark
+            - Kafka
+        - Cloud Platforms:
+            - AWS (especially S3, EC2, Lambda, and SageMaker)
+            - Google Cloud Platform
+            - Microsoft Azure
+
+        Software Engineer Skills :
+
+    Programming:
+
+    Core languages: Java, C++, C#, Python, JavaScript, Ruby, Go, etc.
+    Web Development:
+
+    Front-end: HTML, CSS, JavaScript (React, Vue, Angular)
+    Back-end: Node.js, Django, Ruby on Rails, Flask, Spring Boot
+    Mobile Development:
+
+    Android (Java, Kotlin)
+    iOS (Swift, Objective-C)
+    Databases:
+
+    SQL (MySQL, PostgreSQL, MS SQL, etc.)
+    NoSQL (MongoDB, Cassandra, etc.)
+    API Development:
+
+    RESTful services
+    GraphQL
+    Version Control:
+
+    Git (and platforms like GitHub, GitLab, Bitbucket)
+    Testing:
+
+    Unit testing
+    Integration testing
+    End-to-end testing
+    Frameworks like JUnit, pytest, Mocha
+    DevOps & CI/CD:
+
+    Docker
+    Kubernetes
+    Jenkins, CircleCI
+    Cloud Platforms:
+
+    AWS (EC2, S3, Lambda, RDS, etc.)
+    Google Cloud Platform
+    Microsoft Azure
+    Software Design & Architecture:
+
+    Object-oriented design
+    Design patterns
+    System design principles
+    Web Servers & Tools:
+
+    Apache, Nginx
+    Webpack, Babel
+    Security:
+
+    Authentication and authorization (e.g., JWT, OAuth)
+    Security best practices (e.g., SQL injection prevention, XSS prevention)
+
+10 / 22 / 2023 : 
+    Fiver guy response (REALLY HELPFUL) : 
+        
+        "Changing your resume to different roles: I recommend reviewing the job description and ensuring those skills in the "Required" or "Preferred" sections are listed on your resume. For instance, if a job requires "5+ Years of Data Science Experience", listing the exact match term of "Data Science" will boost your ATS score. The same applies if a job calls for Java, C++, Python, etc.
+        
+11 / 30 / 2023 : 
+
+
+
+    PROJECT TIMELINE (12/01 - 04/12) :
+        Week 1 : 12/02/2023 to 12/08/2023 
+            - setting up full system database on Jetson 
+            - setting up glasses->Jetson(image capture) communication over server 
+            - ensuring classification->notificaiton functionality over FCM with dummy android wearOS application 
+        Week 2 : 12/09/2023 to 12/15/2023
+
+
+        Week 3 : 12/16/2023 to 12/22/2023
+        Week 4 : 12/23/2023 to 12/29/2023
+
+
+        (END OF ALPHA PHASE)
+
+        (START OF BETA PHASE) 
+        Week 5 : 12/30/2023 to 01/05/2024
+        Week 6 : 01/06/2024 to 01/12/2024
+        Week 7 : 01/13/2024 to 01/19/2024
+        Week 8 : 01/20/2024 to 01/26/2024
+
+
+        
+        Week 9 : 01/27/2024 to 02/02/2024
+        Week 10: 02/03/2024 to 02/09/2024
+        Week 11: 02/10/2024 to 02/16/2024
+        Week 12: 02/17/2024 to 02/23/2024
+        Week 13: 02/24/2024 to 03/01/2024
+        Week 14: 03/02/2024 to 03/08/2024
+        Week 15: 03/09/2024 to 03/15/2024
+        Week 16: 03/16/2024 to 03/22/2024
+        Week 17: 03/23/2024 to 03/29/2024
+        Week 18: 03/30/2024 to 04/05/2024
+        Week 19: 04/06/2024 to 04/12/2024
+        (END OF BETA PHASE)
+        (START OF FINAL PHASE)
+
+
+
+    Facial :
+         
+    Object : 
+        Object Class + GPS @instance of detection 
+        
+
+    HTTP and GET 
+    -> POST request 
+    -> on jetson, hold open port : (image, GPS) or (image, NULL) 
+
+
+
+
+
+
+
+12 / 05 / 2023 : 
+    PROJECT TIMELINE (12/01 - 04/12) :
+        Week 1 : 12/02/2023 to 12/08/2023 
+            - setting up full system database on Jetson 
+            - setting up glasses->Jetson(image capture) communication over server 
+            - ensuring classification->notificaiton functionality over FCM with dummy android wearOS application
+
+        Week 2 : 12/09/2023 to 12/15/2023
+        Week 3 : 12/16/2023 to 12/22/2023
+        Week 4 : 12/23/2023 to 12/29/2023
+
+
+
+
+        (END OF ALPHA PHASE)
+        (START OF BETA PHASE) 
+        Week 5 : 12/30/2023 to 01/05/2024
+        Week 6 : 01/06/2024 to 01/12/2024
+        Week 7 : 01/13/2024 to 01/19/2024
+        Week 8 : 01/20/2024 to 01/26/2024
+        Week 9 : 01/27/2024 to 02/02/2024
+        Week 10: 02/03/2024 to 02/09/2024
+        Week 11: 02/10/2024 to 02/16/2024
+        Week 12: 02/17/2024 to 02/23/2024
+        Week 13: 02/24/2024 to 03/01/2024
+        Week 14: 03/02/2024 to 03/08/2024
+        Week 15: 03/09/2024 to 03/15/2024
+        Week 16: 03/16/2024 to 03/22/2024
+        Week 17: 03/23/2024 to 03/29/2024
+        Week 18: 03/30/2024 to 04/05/2024
+        Week 19: 04/06/2024 to 04/12/2024
+        (END OF BETA PHASE)
+        (START OF FINAL PHASE)
+
+
+        Object Classes:
+        - Glasses
+        - Cell-Phones 
+        - Keys 
+
+        
+        - Watches
+    
+12 / 15 / 2023 : 
+    current backlog tasks : 
+    - ensure tuple comm. for pi->Jetson (image, GPS, glassesID) 
+        - test stevens server 
+        - test POST reqs with SAME RESTful comm. (compare and assess) 
+
+
+    - SQLite database setup 
+        - ensure RESTful comm. between android app and database (object detection history (GET), upload facial class (POST)) 
+
+
+    - ensure Firebase Cloud Messaging (Jetson classification -> android app) 
+    - EfficientNet tasks 
+        - assemble (or find online) datasets for object class training (glasses, cell-phones, keys) 
+        - ensure full functionality for facial recognition architecture 
+            - hyperparameter opt. 
+            - conduct analysis for facial class confusion matrix 
+    - RPi-glasses alpha prototype tasks :  
+        - solder GPIO header pins 
+        - ensure functionality for button/light module stuff (for now RPi3b )
+        - power source ??? testing battery life (redundant?)
+            - or start working on implementing the beetle thingy 
+    
+
+    server communication : 
+    - test server steven has set up for sending tuples (image, GPS, glasses ID)
+    - test server with RESTful API server 
+    SQLite database stuff : 
+    - database setup 
+    - ensure queries between app and jetson work 
+    WearOS application stuff : 
+    - develop pages in android studios 
+    - ensure functionality with REST commands with jetson database (RESTful API server )
+        - object detection history (GET) 
+        - facial class upload (POST)
+            - ensure data augm. + fine tuning VGGFace,
+            - new facial class added to database 
+    Firebase Cloud Messaging stuff : 
+    - ensure notifcations for :
+        - no face detection 
+        - face detection (w. relationship)
+        - successful object detection storage
+    Image Classification Stuff : 
+    - training and testing EfficientNet
+        - deploy dummy for notif testing
+    - optimize and deploy VGGFace2 
+    - optimizing and deploying VGGFace2 
+    RPiGlasses prototype stuff :
+    - GPIO header pins soldering 
+    - breadboard button/light module setup 
+    - power source (battery) 
+
+
+
+
+
+12 / 26 / 2023 tasks :
+
+    VGGFace2 
+    - run tests with VGGFace2 with all facial classes
+        - confusion matrix  
+    - deploy into architecture (image upload -> fine tune + model state save) 
+    - instead of FCM, have resultant classification/etc output to screen 
+
+
+
+
+01 / 02 / 2024 : 
+    - on pace to finish the alpha protoype functionality by 01/06
+    - meeting with gieser to show progress and next steps on monday (or sometime next week)
+        - IRB crap 
+        - beta phase plans 
+        - maker space access 
+    - once RPiZero2W-based glasses functionality is done, port scripts over to beetle 
+    - beta glasses prototype development  
+        - power source options 
+    - multi-user functionality with beta system 
+        - microcontroller per room -> rpi4b+? 
+        - integrating into new system architecture, testing, scaling, etc 
+    - EfficientNet training 
+        - scaling upwards from 100 images per object class, utilizing RTX 4090 

@@ -1,116 +1,116 @@
+# GPU implementation of tuning VGGFace2 (pret. on imagenet) 
+# utilizes openCVs deep learning face detector
+
 import os
 import cv2
 import numpy as np
-from keras.preprocessing import image
-from keras_vggface.vggface import VGGFace
-from keras_vggface.utils import preprocess_input
-from keras.models import Model
-from keras.layers import Dense
-from keras.optimizers import Adam
+from tensorflow.keras.preprocessing import image
+from tensorflow.keras.applications import VGGFace
+from tensorflow.keras.applications.vggface.utils import preprocess_input
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.optimizers import Adam
 from sklearn.model_selection import train_test_split
 
-# Function to display the image with label
-def display_image_with_label(image, label):
+# Enable mixed precision training
+from tensorflow.keras.mixed_precision import experimental as mixed_precision
+policy = mixed_precision.Policy('mixed_float16')
+mixed_precision.set_policy(policy)
+
+# Load OpenCV's deep learning face detector
+protoPath = "opencv/deploy.prototxt.txt"  # Update this path
+modelPath = "opencv/res10_300x300_ssd_iter_140000.caffemodel"  # Update this path
+net = cv2.dnn.readNetFromCaffe(protoPath, modelPath)
+
+def display_image_with_label(img, label):
     window_name = "Prediction"
     font = cv2.FONT_HERSHEY_SIMPLEX
     color = (255, 0, 0)  # Blue color in BGR
     font_scale = 1
     thickness = 2
-    cv2.putText(image, label, (50, 50), font, font_scale, color, thickness, cv2.LINE_AA)
-    cv2.imshow(window_name, image)
-    cv2.waitKey(0)  # Wait for a key press to close the window
+    cv2.putText(img, label, (50, 50), font, font_scale, color, thickness, cv2.LINE_AA)
+    cv2.imshow(window_name, img)
+    cv2.waitKey(1000)  # Display for 1000 ms
     cv2.destroyAllWindows()
 
-# Function to load images and assign labels
 def load_images(image_dir, label):
     images = []
     labels = []
     for img_name in os.listdir(image_dir):
-        if img_name.lower().endswith(('.png', '.jpg', '.jpeg')):  # Check for image files
+        if img_name.lower().endswith(('.png', '.jpg', '.jpeg')):
             img_path = os.path.join(image_dir, img_name)
             img = image.load_img(img_path, target_size=(224, 224))
             img = image.img_to_array(img)
-            img = preprocess_input(img, version=2)  # Use version 2 for ResNet50
+            img = preprocess_input(img, version=2)
             images.append(img)
             labels.append(label)
     return np.array(images), np.array(labels)
 
-def crop_faces_in_images(images, face_cascade_path):
+def crop_faces_in_images(images, labels):
     cropped_images = []
-    face_cascade = cv2.CascadeClassifier(face_cascade_path)
+    new_labels = []
+    faces_detected = 0
+    for img, label in zip(images, labels):
+        if img is None or img.size == 0:
+            continue
+        (h, w) = img.shape[:2]
+        blob = cv2.dnn.blobFromImage(cv2.resize(img, (300, 300)), 1.0, (300, 300), (104.0, 177.0, 123.0))
+        net.setInput(blob)
+        detections = net.forward()
+        for i in range(detections.shape[2]):
+            confidence = detections[0, 0, i, 2]
+            if confidence > 0.5:
+                faces_detected += 1
+                box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
+                (startX, startY, endX, endY) = box.astype("int")
+                face = img[startY:endY, startX:endX]
+                face = cv2.resize(face, (224, 224))
+                cropped_images.append(face)
+                new_labels.append(label)
+                break
+    return np.array(cropped_images), np.array(new_labels), faces_detected
 
-    for img in images:
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+class_labels = ['giannis', 'steph', 'jokic', 'timmy', 'kobe']
+num_classes = len(class_labels)
+images, labels = [], []
 
-        for (x, y, w, h) in faces:
-            cropped_face = img[y:y+h, x:x+w]
-            cropped_images.append(cropped_face)
-            break  # Assuming only one face per image
+for i, class_label in enumerate(class_labels):
+    class_images, class_labels = load_images(f'data/{class_label}_augmented', np.eye(num_classes)[i])
+    cropped_images, new_labels, faces_detected = crop_faces_in_images(class_images, class_labels)
+    images.extend(cropped_images)
+    labels.extend(new_labels)
 
-    return cropped_images
-# Load and crop images
-haar_cascade_path = "haarcascade/haarcascade_frontalface_default.xml"
-ahmed_images, ahmed_labels = load_images('data/ahmed', [1, 0])
-efaz_images, efaz_labels = load_images('data/efaz', [0, 1])
+X_train, X_val, y_train, y_val = train_test_split(np.array(images), np.array(labels), test_size=0.2, random_state=42)
 
-
-
-# Combine the datasets
-images = np.concatenate((ahmed_images, efaz_images), axis=0)
-labels = np.concatenate((ahmed_labels, efaz_labels), axis=0)
-
-images_cropped = crop_faces_in_images(images, haar_cascade_path)
-print("TOTAL TRAINING IMAGES::::::::" + len(images_cropped))
-# Split the dataset into training and validation
-X_train, X_val, y_train, y_val = train_test_split(images, labels, test_size=0.2, random_state=42)
-
-# Load the pretrained VGGFace2 model
 base_model = VGGFace(model='resnet50', include_top=False, input_shape=(224, 224, 3), pooling='avg')
-
-# Add custom top layers for fine-tuning
 x = base_model.output
 x = Dense(1024, activation='relu')(x)
-predictions = Dense(2, activation='softmax')(x)  # 2 classes: Ahmed and Efaz
+predictions = Dense(num_classes, activation='softmax', dtype='float32')(x)  # Ensure output layer uses float32 for mixed precision
 
-# Create the final model
 model = Model(inputs=base_model.input, outputs=predictions)
-
-# Freeze all the layers in the base model
 for layer in base_model.layers:
     layer.trainable = False
 
-# Compile the model
-model.compile(optimizer=Adam(lr=0.0001), loss='binary_crossentropy', metrics=['accuracy'])
+model.compile(optimizer=Adam(lr=0.0001), loss='categorical_crossentropy', metrics=['accuracy'])
 
-# Fine-tune the model on your dataset
 model.fit(X_train, y_train, epochs=5, batch_size=16, validation_data=(X_val, y_val))
 
-# Function to predict and print classification with confidence
-def predict_and_print_confidence(model, image):
-    prediction = model.predict(image)
-    label = "Ahmed" if prediction[0][0] > prediction[0][1] else "Efaz"
-    confidence = prediction[0][np.argmax(prediction[0])]
-    print(f"Predicted Label: {label}, Confidence: {confidence:.2f}")
+test_image_path = 'images.jpg'
+test_img = cv2.imread(test_image_path)
+test_img = cv2.cvtColor(test_img, cv2.COLOR_BGR2RGB)  # Convert to RGB
+test_img = cv2.resize(test_img, (224, 224))
+test_img = np.expand_dims(test_img, axis=0)
+test_img = test_img.astype('float32')
+test_img = preprocess_input(test_img)
 
-# Prepare the test image
-test_image_path = 'test_image002.jpg'  # Replace with your test image path
-cropped_test_image = crop_faces_in_images(test_image_path, haar_cascade_path) 
-cropped_test_image_resized = cv2.resize(cropped_test_image, (224, 224))
-cropped_test_image_resized = image.img_to_array(cropped_test_image_resized)
-cropped_test_image_resized = np.expand_dims(cropped_test_image_resized, axis=0)
-cropped_test_image_resized = preprocess_input(cropped_test_image_resized, version=2)
+cropped_test_images, _, faces_detected = crop_faces_in_images(test_img, ['test'])
+if faces_detected > 0:
+    prediction = model.predict(cropped_test_images)
+    predicted_label_index = np.argmax(prediction)
+    predicted_label_name = class_labels[predicted_label_index]
+    print(f"Predicted class: {predicted_label_name}")
 
-
-# Make a prediction on the cropped image
-prediction = model.predict(cropped_test_image_resized)
-
-# Determine the label and confidence based on the prediction
-predicted_label = "Ahmed" if prediction[0][0] > prediction[0][1] else "Efaz"
-confidence = max(prediction[0][0], prediction[0][1])
-
-# Display the cropped test image with the label
-display_image_with_label(cropped_test_image, f"{predicted_label} ({confidence:.2f})")
-
-# Also print the label and confidence to stdout
-print(f"Predicted Label: {predicted_label}, Confidence: {confidence:.2f}")
+    display_img = cv2.cvtColor(cropped_test_images[0], cv2.COLOR_RGB2BGR)
+    display_image_with_label(display_img, predicted_label_name)
+else:
+    print("No face detected in the test image.")

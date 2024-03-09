@@ -4,7 +4,7 @@ import os
 import random
 from PIL import Image, ImageOps, ImageEnhance
 
-label_name = "giannis"
+label_name = "timmy"
 def augment_image(image):
     """Apply random augmentation to an image."""
     choice = random.randint(1, 4)
